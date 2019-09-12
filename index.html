@@ -4,8 +4,31 @@
     <meta charset="UTF-8">
     <title>My Redux</title>
 </head>
+<script src="myRedux.js"></script>
 <script src="index.js"></script>
 <body>
+    <h1>Mi equipo de futbol</h1>
+    <input id="txtPlayerName" />
+    <button onclick="addPlayer()">Agregar jugador</button>
+    <ul id="players">
+<!--        <li> Zlatan </li>-->
+    </ul>
+<script>
+    store.subscribe(function(){
+       const players = store.getState();
+       const ul = document.getElementById('players');
+       ul.innerHTML = "";
+       players.forEach(p => {
+          const li = document.createElement('li');
+          li.innerHTML = p;
+          ul.appendChild(li);
+       })
+    })
 
+    function addPlayer() {
+       const playerName = document.getElementById('txtPlayerName').value;
+       store.dispatch({ type: 'ADD_PLAYER', playerName: playerName })
+    }
+</script>
 </body>
 </html>
