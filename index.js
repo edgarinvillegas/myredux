@@ -1,35 +1,56 @@
 console.log('Hola index.js')
 
+
 function playersReducer(state = [], action) {
    switch(action.type) {
-      case 'ADD_PLAYER':
+      case 'ADD_PLAYER': {
          const playerName = action.playerName;
-         return state.concat([playerName])
-      // case 'REMOVE_PLAYER':
+         // return state.concat([playerName])
+         return [...state, playerName];
+      }
+      case 'REMOVE_PLAYER': {
+         const playerName = action.playerName;
+         return state.filter(p => p != playerName);
+      }
       default:
          return state;
    }
 }
 
+/**
+ *
+ * state = 'Chacarita Juniors'
+ */
+function teamNameReducer(state = '', action) {
+   switch (action.type) {
+      case 'SET_TEAM_NAME':
+         const teamName = action.teamName;
+         return teamName;
+      default:
+         return state;
+   }
+}
+
+/*
+  state = {
+     teamName: 'THE STRONGEST',
+     players: ['Chumita', 'Vaca', 'Vaca2', 'Vaca3']
+  }
+* */
+function rootReducer(state = {}, action) {
+   return {
+      players: playersReducer(state.players, action),
+      teamName: teamNameReducer(state.teamName, action)
+   };
+}
+
+
 
 /*['Chuma', 'Messi', 'Suarez']*/
 
-const store = createStore(playersReducer);
+const store = createStore(rootReducer);
 store.subscribe(function(){
    console.log('State changed!! to: ', store.getState())
 })
 
-// console.log('Newly created store state', store.getState())
-//
-// const actionChuma = { type: 'ADD_PLAYER', playerName: 'Chuma' };
-// store.dispatch(actionChuma)
-//
-// console.log('State after dispatching actionChuma: ', store.getState())
-//
-// store.dispatch({ type: 'ADD_PLAYER', playerName: 'Escobar' })
-//
-// console.log('State after dispatching other action: ', store.getState())
-
-// const newList = playersReducer([], actionChuma)
-// console.log('newList', newList)
 

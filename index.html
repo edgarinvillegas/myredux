@@ -6,8 +6,16 @@
 </head>
 <script src="myRedux.js"></script>
 <script src="index.js"></script>
+<script src="actions.js"></script>
 <body>
     <h1>Mi equipo de futbol</h1>
+    <input id="txtTeamName" placeholder="Nombre del equipo" />
+    <button onclick="saveTeamName()">Guardar</button>
+    <br />
+    Equipo guardado: <h2 id="teamNameLabel"></h2>
+
+    <hr/>
+    <h3>Jugadores</h3>
     <input id="txtPlayerName" />
     <button onclick="addPlayer()">Agregar jugador</button>
     <ul id="players">
@@ -15,19 +23,41 @@
     </ul>
 <script>
     store.subscribe(function(){
-       const players = store.getState();
+       const stateTree = store.getState();
+       stateToUI(stateTree, function(playerName) {
+          store.dispatch(removePlayerAction(playerName))
+       })
+    })
+
+    function stateToUI(stateTree, onRemoveBtnClick) {
+       const players = stateTree.players;
+       const teamName = stateTree.teamName;
+       document.getElementById('teamNameLabel').innerHTML = teamName;
        const ul = document.getElementById('players');
        ul.innerHTML = "";
        players.forEach(p => {
           const li = document.createElement('li');
           li.innerHTML = p;
+          const removeBtn = document.createElement('button');
+          removeBtn.innerHTML = 'X';
+          removeBtn.addEventListener('click', () => {
+             onRemoveBtnClick(p)
+          })
+          li.appendChild(removeBtn);
+
           ul.appendChild(li);
        })
-    })
+    }
 
     function addPlayer() {
        const playerName = document.getElementById('txtPlayerName').value;
-       store.dispatch({ type: 'ADD_PLAYER', playerName: playerName })
+       store.dispatch(addPlayerAction(playerName))
+    }
+
+    function saveTeamName() {
+       const teamName = document.getElementById('txtTeamName').value;
+       // alert('Will save ' + teamName)
+       store.dispatch(setTeamNameAction(teamName))
     }
 </script>
 </body>
