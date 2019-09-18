@@ -7,6 +7,7 @@ function createStore(reducer) {
          return state;
       },
       dispatch: function(action) {
+         // middleware
          state = reducer(state, action);
          listeners.forEach( l => l());
       },

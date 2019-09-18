@@ -5,9 +5,7 @@
     <title>My Redux</title>
 </head>
 <script src="https://unpkg.com/redux@4.0.4/dist/redux.min.js"></script>
-<script>
-    const { createStore } = Redux;
-</script>
+<script src="https://unpkg.com/redux-thunk@2.1.0/dist/redux-thunk.min.js"></script>
 <script src="index.js"></script>
 <script src="actions.js"></script>
 <body>
@@ -24,6 +22,7 @@
     <ul id="players">
 <!--        <li> Zlatan </li>-->
     </ul>
+    <button onclick="clearClick()">Clear</button>
 <script>
     store.subscribe(function(){
        const stateTree = store.getState();
@@ -59,8 +58,11 @@
 
     function saveTeamName() {
        const teamName = document.getElementById('txtTeamName').value;
-       // alert('Will save ' + teamName)
-       store.dispatch(setTeamNameAction(teamName))
+       store.dispatch(saveTeamNameThunk(teamName))
+    }
+
+    function clearClick() {
+       store.dispatch(clearAction())
     }
 </script>
 </body>

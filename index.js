@@ -1,4 +1,12 @@
-console.log('Hola index.js')
+const { createStore, applyMiddleware } = Redux;
+
+/*['Chuma', 'Messi', 'Suarez']*/
+
+const store = createStore(rootReducer, applyMiddleware(ReduxThunk.default));
+
+store.subscribe(function(){
+   console.log('State changed!! to: ', store.getState())
+})
 
 
 function playersReducer(state = [], action) {
@@ -11,6 +19,9 @@ function playersReducer(state = [], action) {
       case 'REMOVE_PLAYER': {
          const playerName = action.playerName;
          return state.filter(p => p != playerName);
+      }
+      case 'CLEAR': {
+         return [];
       }
       default:
          return state;
@@ -26,6 +37,8 @@ function teamNameReducer(state = '', action) {
       case 'SET_TEAM_NAME':
          const teamName = action.teamName;
          return teamName;
+      case 'CLEAR':
+         return ''
       default:
          return state;
    }
@@ -46,11 +59,14 @@ function rootReducer(state = {}, action) {
 
 
 
-/*['Chuma', 'Messi', 'Suarez']*/
-
-const store = createStore(rootReducer);
-store.subscribe(function(){
-   console.log('State changed!! to: ', store.getState())
-})
-
+function saveTeamNameApi(teamName) {
+   return new Promise((resolve, reject) => {
+      setTimeout(() => {
+         if(Math.random() < 0.5)
+            resolve(teamName + ' (R)')
+         else
+            reject()
+      }, 4000)
+   })
+}
 
