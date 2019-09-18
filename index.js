@@ -66,7 +66,7 @@ function saveTeamNameApi(teamName) {
             resolve(teamName + ' (R)')
          else
             reject()
-      }, 4000)
+      }, 2000)
    })
 }
 

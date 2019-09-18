@@ -6,25 +6,127 @@
 </head>
 <script src="https://unpkg.com/redux@4.0.4/dist/redux.min.js"></script>
 <script src="https://unpkg.com/redux-thunk@2.1.0/dist/redux-thunk.min.js"></script>
+<script src="https://unpkg.com/react@16.9.0/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@16.9.0/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+
 <script src="index.js"></script>
 <script src="actions.js"></script>
 <body>
     <h1>Mi equipo de futbol</h1>
-    <input id="txtTeamName" placeholder="Nombre del equipo" />
-    <button onclick="saveTeamName()">Guardar</button>
-    <br />
-    Equipo guardado: <h2 id="teamNameLabel"></h2>
 
-    <hr/>
-    <h3>Jugadores</h3>
-    <input id="txtPlayerName" />
-    <button onclick="addPlayer()">Agregar jugador</button>
-    <ul id="players">
-<!--        <li> Zlatan </li>-->
-    </ul>
+
     <button onclick="clearClick()">Clear</button>
+
+    <hr />
+    <div id="react-app"></div>
+
+
+
+<script type="text/babel">
+    function TeamName({ teamName, onTeamNameSave }) {
+       function handleSaveTeamName() {
+          const teamName = document.getElementById('txtTeamName').value;
+          onTeamNameSave(teamName)
+       }
+
+       return (
+          <div>
+             <input id="txtTeamName" placeholder="Nombre del equipo"/>
+             <button onClick={handleSaveTeamName}>Guardar</button>
+             <br/>
+             Equipo guardado: <h2 id="teamNameLabel">{teamName}</h2>
+          </div>
+       );
+    }
+
+    class ConnectedTeamName extends React.Component {
+       componentDidMount() {
+          store.subscribe(() => {
+             this.forceUpdate()
+          })
+       }
+       onTeamNameSave = teamName => {
+          //alert(teamName)
+          store.dispatch(saveTeamNameThunk(teamName))
+       }
+
+       render() {
+          return (
+             <TeamName
+                teamName={store.getState().teamName}
+                onTeamNameSave={this.onTeamNameSave}
+             />
+          )
+       }
+    }
+
+    function Players({ players, onAddPlayer, onRemovePlayer }) {
+       function handleAddPlayer() {
+          const playerName = document.getElementById('txtPlayerName').value;
+          onAddPlayer(playerName)
+       }
+
+       return (
+          <div>
+             <h3>Jugadores</h3>
+             <input id="txtPlayerName"/>
+             <button onClick={handleAddPlayer}>Agregar jugador</button>
+             <ul id="players">
+                {players.map( player => (
+                   <li key={player}>
+                      {player}
+                      <button onClick={() => onRemovePlayer(player)}> X </button>
+                   </li>
+                ))}
+             </ul>
+          </div>
+       );
+    }
+
+    class ConnectedPlayers extends React.Component {
+       componentDidMount() {
+          store.subscribe(() => {
+             this.forceUpdate()
+          })
+       }
+       onAddPlayer = playerName => {
+          store.dispatch(addPlayerAction(playerName))
+       }
+
+       onRemovePlayer = playerName => {
+          store.dispatch(removePlayerAction(playerName))
+       }
+
+       render() {
+          return (
+             <Players
+                players={store.getState().players}
+                onAddPlayer={ this.onAddPlayer }
+                onRemovePlayer={ this.onRemovePlayer }
+             />
+          )
+       }
+    }
+
+
+    class App extends React.Component {
+       render() {
+          return (
+             <div>
+                 <ConnectedTeamName />
+                 <ConnectedPlayers/>
+             </div>
+          )
+       }
+    }
+    ReactDOM.render(
+       <App />,
+       document.getElementById('react-app')
+    )
+</script>
 <script>
-    store.subscribe(function(){
+    /*store.subscribe(function(){
        const stateTree = store.getState();
        stateToUI(stateTree, function(playerName) {
           store.dispatch(removePlayerAction(playerName))
@@ -63,7 +165,7 @@
 
     function clearClick() {
        store.dispatch(clearAction())
-    }
+    }*/
 </script>
 </body>
 </html>

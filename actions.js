@@ -17,11 +17,12 @@ function clearAction() {
 
 function saveTeamNameThunk(teamName) {
    return function(dispatch) {
+      dispatch(setTeamNameAction(teamName))
       saveTeamNameApi(teamName).then( newTeamName => {
          dispatch(setTeamNameAction(newTeamName))
       }).catch( exc => {
          alert('ERROR')
-         // store.dispatch(setTeamNameAction('ERROR'))
+         store.dispatch(setTeamNameAction(''))
       });
    }
 }
