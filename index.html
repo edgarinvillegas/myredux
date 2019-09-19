@@ -7,11 +7,14 @@
 <script src="https://unpkg.com/redux@4.0.4/dist/redux.min.js"></script>
 <script src="https://unpkg.com/redux-thunk@2.1.0/dist/redux-thunk.min.js"></script>
 <script src="https://unpkg.com/react@16.9.0/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-redux@5.0.6/dist/react-redux.min.js"></script>
 <script src="https://unpkg.com/react-dom@16.9.0/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
 
 <script src="index.js"></script>
 <script src="actions.js"></script>
+<script src="reducers.js"></script>
+<script src="store.js"></script>
 <body>
     <h1>Mi equipo de futbol</h1>
 
@@ -24,7 +27,10 @@
 
 
 <script type="text/babel">
-    function TeamName({ teamName, onTeamNameSave }) {
+   const { Provider, connect } = ReactRedux;
+
+
+    function TeamName({ teamName, fulanito, onTeamNameSave }) {
        function handleSaveTeamName() {
           const teamName = document.getElementById('txtTeamName').value;
           onTeamNameSave(teamName)
@@ -36,11 +42,28 @@
              <button onClick={handleSaveTeamName}>Guardar</button>
              <br/>
              Equipo guardado: <h2 id="teamNameLabel">{teamName}</h2>
+             <pre> {fulanito} </pre>
           </div>
        );
     }
 
-    class ConnectedTeamName extends React.Component {
+    function mapearEstadoAProps(stateTree) {
+       return {
+          teamName: stateTree.teamName,
+          fulanito: 'FULANITO'
+       }
+    }
+    function mapearDispatchAProps(dispatch) {
+       return {
+          onTeamNameSave: teamName => dispatch(saveTeamNameThunk(teamName))
+       }
+    }
+
+    const ConnectedTeamName = connect(mapearEstadoAProps, mapearDispatchAProps)(TeamName)
+
+
+
+    /*class ConnectedTeamName extends React.Component {
        componentDidMount() {
           store.subscribe(() => {
              this.forceUpdate()
@@ -59,9 +82,9 @@
              />
           )
        }
-    }
+    }*/
 
-    function Players({ players, onAddPlayer, onRemovePlayer }) {
+    function Players({ players, numPlayers, onAddPlayer, onRemovePlayer }) {
        function handleAddPlayer() {
           const playerName = document.getElementById('txtPlayerName').value;
           onAddPlayer(playerName)
@@ -69,7 +92,7 @@
 
        return (
           <div>
-             <h3>Jugadores</h3>
+             <h3>Jugadores ({numPlayers})</h3>
              <input id="txtPlayerName"/>
              <button onClick={handleAddPlayer}>Agregar jugador</button>
              <ul id="players">
@@ -84,7 +107,29 @@
        );
     }
 
-    class ConnectedPlayers extends React.Component {
+    function mapStateToProps(stateTree) {
+       console.log('MAP STATE PLAYERS')
+       return {
+          players: stateTree.players,
+          numPlayers: stateTree.players.length
+       }
+    }
+
+    function mapDispatchToProps(dispatch) {
+       return {
+          onAddPlayer: playerName => dispatch(addPlayerAction(playerName)),
+          onRemovePlayer: playerName =>  dispatch(removePlayerAction(playerName))
+       }
+    }
+
+   /*const mapDispatchToProps = {
+         onAddPlayer: playerName => addPlayerAction(playerName),
+         onRemovePlayer: playerName =>  removePlayerAction(playerName)
+   }*/
+
+    const ConnectedPlayers = connect(mapStateToProps, mapDispatchToProps)(Players);
+
+    /*class ConnectedPlayers extends React.Component {
        componentDidMount() {
           store.subscribe(() => {
              this.forceUpdate()
@@ -107,16 +152,17 @@
              />
           )
        }
-    }
-
+    }*/
 
     class App extends React.Component {
        render() {
           return (
-             <div>
-                 <ConnectedTeamName />
-                 <ConnectedPlayers/>
-             </div>
+             <Provider store={createMyStore()}>
+                 <div>
+                     <ConnectedTeamName />
+                     <ConnectedPlayers/>
+                 </div>
+             </Provider>
           )
        }
     }
@@ -126,46 +172,6 @@
     )
 </script>
 <script>
-    /*store.subscribe(function(){
-       const stateTree = store.getState();
-       stateToUI(stateTree, function(playerName) {
-          store.dispatch(removePlayerAction(playerName))
-       })
-    })
-
-    function stateToUI(stateTree, onRemoveBtnClick) {
-       const players = stateTree.players;
-       const teamName = stateTree.teamName;
-       document.getElementById('teamNameLabel').innerHTML = teamName;
-       const ul = document.getElementById('players');
-       ul.innerHTML = "";
-       players.forEach(p => {
-          const li = document.createElement('li');
-          li.innerHTML = p;
-          const removeBtn = document.createElement('button');
-          removeBtn.innerHTML = 'X';
-          removeBtn.addEventListener('click', () => {
-             onRemoveBtnClick(p)
-          })
-          li.appendChild(removeBtn);
-
-          ul.appendChild(li);
-       })
-    }
-
-    function addPlayer() {
-       const playerName = document.getElementById('txtPlayerName').value;
-       store.dispatch(addPlayerAction(playerName))
-    }
-
-    function saveTeamName() {
-       const teamName = document.getElementById('txtTeamName').value;
-       store.dispatch(saveTeamNameThunk(teamName))
-    }
-
-    function clearClick() {
-       store.dispatch(clearAction())
-    }*/
 </script>
 </body>
 </html>
