@@ -22,7 +22,7 @@ function saveTeamNameThunk(teamName) {
          dispatch(setTeamNameAction(newTeamName))
       }).catch( exc => {
          alert('ERROR')
-         store.dispatch(setTeamNameAction(''))
+         dispatch(setTeamNameAction(''))
       });
    }
 }

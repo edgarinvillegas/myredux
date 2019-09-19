@@ -17,10 +17,6 @@
 <script src="store.js"></script>
 <body>
     <h1>Mi equipo de futbol</h1>
-
-
-    <button onclick="clearClick()">Clear</button>
-
     <hr />
     <div id="react-app"></div>
 
@@ -30,7 +26,7 @@
    const { Provider, connect } = ReactRedux;
 
 
-    function TeamName({ teamName, fulanito, onTeamNameSave }) {
+    function TeamName({ teamName, onTeamNameSave }) {
        function handleSaveTeamName() {
           const teamName = document.getElementById('txtTeamName').value;
           onTeamNameSave(teamName)
@@ -42,15 +38,13 @@
              <button onClick={handleSaveTeamName}>Guardar</button>
              <br/>
              Equipo guardado: <h2 id="teamNameLabel">{teamName}</h2>
-             <pre> {fulanito} </pre>
           </div>
        );
     }
 
     function mapearEstadoAProps(stateTree) {
        return {
-          teamName: stateTree.teamName,
-          fulanito: 'FULANITO'
+          teamName: stateTree.teamName
        }
     }
     function mapearDispatchAProps(dispatch) {
@@ -60,7 +54,6 @@
     }
 
     const ConnectedTeamName = connect(mapearEstadoAProps, mapearDispatchAProps)(TeamName)
-
 
 
     /*class ConnectedTeamName extends React.Component {
@@ -84,7 +77,7 @@
        }
     }*/
 
-    function Players({ players, numPlayers, onAddPlayer, onRemovePlayer }) {
+    function Players({ players, numPlayers, onAddPlayer, onRemovePlayer, title }) {
        function handleAddPlayer() {
           const playerName = document.getElementById('txtPlayerName').value;
           onAddPlayer(playerName)
@@ -92,7 +85,7 @@
 
        return (
           <div>
-             <h3>Jugadores ({numPlayers})</h3>
+             <h3>{title} ({numPlayers})</h3>
              <input id="txtPlayerName"/>
              <button onClick={handleAddPlayer}>Agregar jugador</button>
              <ul id="players">
@@ -122,7 +115,9 @@
        }
     }
 
-   /*const mapDispatchToProps = {
+   /*
+   // Alternate syntax. It also works
+   const mapDispatchToProps = {
          onAddPlayer: playerName => addPlayerAction(playerName),
          onRemovePlayer: playerName =>  removePlayerAction(playerName)
    }*/
@@ -154,13 +149,19 @@
        }
     }*/
 
+    const Clear = ({ onClear }) => <button onClick={onClear}> Clear </button>
+
+   // Clear doesn't read anything from state, so its mapStateToProps is null.
+    const ConnectedClear = connect(null, { onClear: clearAction })(Clear);  // Using super short syntax
+
     class App extends React.Component {
        render() {
           return (
              <Provider store={createMyStore()}>
                  <div>
                      <ConnectedTeamName />
-                     <ConnectedPlayers/>
+                     <ConnectedPlayers title="Jugadores"/>
+                     <ConnectedClear />
                  </div>
              </Provider>
           )
